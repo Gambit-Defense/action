@@ -1,7 +1,94 @@
+exclude: |
+    (?x)(
+        ^data/|
+        ^docs/|
+        ^notebooks/|
+        .*pb2\.py
+    )
+
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v4.5.0
     hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
+    -   id: check-added-large-files
+    -   id: check-executables-have-shebangs
+        exclude: (?x)(.*\.bat)
+    -   id: check-json
+    -   id: check-shebang-scripts-are-executable
+    -   id: pretty-format-json
+        args: ['--indent', '4', '--autofix']
+    -   id: check-toml
     -   id: check-yaml
+    -   id: detect-aws-credentials
+        args: [--allow-missing-credentials]
+    -   id: detect-private-key
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+
+-   repo: https://github.com/psf/black
+    rev: 23.10.1
+    hooks:
+    -   id: black
+        args: [--config=./pyproject.toml, --line-length=120]
+        exclude: (?x)(.*\.json)
+
+-   repo: https://github.com/PyCQA/flake8
+    rev: 6.1.0
+    hooks:
+    -   id: flake8
+        args: [
+            --max-line-length=120,
+            "--ignore=F401, W503, E741, E731, E203, E402"
+        ]
+        exclude: (?x)(.*\.json)
+
+-   repo: https://github.com/pycqa/pydocstyle
+    rev: '6.3.0'
+    hooks:
+    -   id: pydocstyle
+        args: ['--convention=google']
+        additional_dependencies: ["tomli"]
+
+-   repo: https://github.com/asottile/reorder-python-imports
+    rev: v3.12.0
+    hooks:
+    -   id: reorder-python-imports
+
+-   repo: https://github.com/asottile/add-trailing-comma
+    rev: v3.1.0
+    hooks:
+    -   id: add-trailing-comma
+
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.6.1
+    hooks:
+    -   id: mypy
+        args: [
+            --strict,
+            --implicit-reexport,
+            --ignore-missing-imports,
+            --allow-subclassing-any,
+            --config-file=pyproject.toml
+        ]
+        additional_dependencies: [types-protobuf, pytest-mypy]
+
+-   repo: https://github.com/codespell-project/codespell
+    rev: v2.2.6
+    hooks:
+    -   id: codespell
+        additional_dependencies: [tomli]
+        args: [--ignore-words-list, "ned", "--write-changes"]
+
+-   repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5
+    hooks:
+    -   id: clang-format
+        args: [-i,-style=Google,--no-diff]
+    -   id: clang-tidy
+        args: [--fix-errors]
+    -   id: oclint
+    -   id: uncrustify
+        args: [--replace,--no-backup,--if-changed,--no-diff]
+    -   id: cppcheck
+    -   id: cpplint
+    -   id: include-what-you-use
